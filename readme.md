@@ -11,10 +11,10 @@ Copy or cut files, then paste them later. `pasta c` and `pasta x` add files to c
 
 ## Options
 
-- **c|copy**: Add file to the <u>copy</u> list.
-- **x|cut**: Add file to the <u>cut</u> list.
-- **x|cut**: Copy files on the <u>copy</u> list and move files on the <u>cut</u> list.
-- **e|empty**: Empty <u>copy</u> and <u>cut</u> lists.
+- **c|copy**: Add file to the _copy_ list.
+- **x|cut**: Add file to the _cut_ list.
+- **x|cut**: Copy files on the _copy_ list and move files on the _cut_ list.
+- **e|empty**: Empty _copy_ and _cut_ lists.
 
 ## Install
 
