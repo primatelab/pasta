@@ -1,0 +1,85 @@
+#! /bin/bash
+
+copylist="$XDG_RUNTIME_DIR/copypasta.copy.txt"
+cutlist="$XDG_RUNTIME_DIR/copypasta.cut.txt"
+[[ -e $copylist ]] || touch $copylist
+[[ -e $cutlist ]] || touch $cutlist
+rd=$'\033[1;31m'
+gr=$'\033[1;32m'
+yl=$'\033[1;33m'
+wh=$'\033[0m'
+bl=$'\033[1m'
+dm=$'\033[2m'
+
+addto () {
+  while read line; do
+    for i in $line; do
+      f="$(realpath "$i")"
+      if [[ -e "$i" ]]; then
+        sed -i "\#$f#d" $cutlist
+        sed -i "\#$f#d" $copylist
+        echo "$f" >> $1
+        case "$1" in
+          $copylist ) echo -n "[${gr}+${wh}] " ;;
+          $cutlist  ) echo -n "[${rd}x${wh}] " ;;
+        esac
+        echo "$i" | sed -E "s#$HOME#~#; s#([/~].*/)#$wh$dm\1$wh$bl#"
+      else
+        echo "[${rd}!${wh}] $i doesn't exist." >&2
+      fi
+    done
+  done
+}
+
+op="$1"
+shift
+case "${op,,}" in
+  e|empty )
+    : > $cutlist
+    : > $copylist
+    echo "CopyPasta clipboard emptied."
+  ;;
+  c|copy ) 
+    if [[ ! -t 0 ]]; then
+      cat | addto "$copylist"
+    fi
+    echo "$@" | addto "$copylist"
+  ;;
+  x|cut ) 
+    if [[ ! -t 0 ]]; then
+      cat | addto "$cutlist"
+    fi
+    echo "$@" | addto "$cutlist"
+  ;;
+  v|paste )
+    while read line; do
+      err="$(mv "$line" . 2>&1)"
+      if [[ -z "$err" ]]; then
+        sed -i "\#$line#d" $cutlist
+        echo "[${yl}>${wh}] $line" | sed -E "s#$HOME#~#; s#([/~].*/)#$wh$dm\1$wh$bl#"
+      else
+        echo "$err" | sed "s/mv:/[${rd}!${wh}]/" >&2
+      fi
+    done < $cutlist
+    while read line; do
+      if [[ -d "$line" ]]; then
+        err="$(cp -r "$line" . 2>&1)"
+      else
+        err="$(cp "$line" . 2>&1)"
+      fi
+      if [[ -z "$err" ]]; then
+        sed -i "\#$line#d" $copylist
+        echo "[${yl}+${wh}] $line" | sed -E "s#$HOME#~#; s#([/~].*/)#$wh$dm\1$wh$bl#"
+      else
+        echo "$err" | sed "s/cp:/[${rd}!${wh}]/" >&2
+      fi
+    done < $copylist
+  ;;
+  *   ) 
+    # echo "${bl}To Copy:"
+    cat $copylist | sort -u | sed -E "s#$HOME#~#; s/^/ $gr*$wh /; s#([/~].*/)#$wh$dm\1$wh$bl#"
+    # echo "${bl}To Move:"
+    cat $cutlist | sort -u | sed -E "s#$HOME#~#; s/^/ $rd*$wh /; s#([/~].*/)#$wh$dm\1$wh$bl#"
+  ;;
+esac
+echo -n $wh
