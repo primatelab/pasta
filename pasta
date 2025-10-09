@@ -77,9 +77,9 @@ case "${op,,}" in
   ;;
   *   ) 
     # echo "${bl}To Copy:"
-    cat $copylist | sort -u | sed -E "s#$HOME#~#; s/^/ $gr*$wh /; s#([/~].*/)#$wh$dm\1$wh$bl#"
+    cat <(echo Copy:) $copylist | sort -u | sed -E "s#$HOME#~#; s/^/ $gr*$wh /; s#([/~].*/)#$wh$dm\1$wh$bl#"
     # echo "${bl}To Move:"
-    cat $cutlist | sort -u | sed -E "s#$HOME#~#; s/^/ $rd*$wh /; s#([/~].*/)#$wh$dm\1$wh$bl#"
+    cat <(echo Cut:) $cutlist | sort -u | sed -E "s#$HOME#~#; s/^/ $rd*$wh /; s#([/~].*/)#$wh$dm\1$wh$bl#"
   ;;
 esac
 echo -n $wh
