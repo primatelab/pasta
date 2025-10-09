@@ -77,9 +77,9 @@ case "${op,,}" in
   ;;
   *   ) 
     # echo "${bl}To Copy:"
-    cat <( (($(wc -l $copylist)==0)) && echo "copy list empty") $copylist | sort -u | sed -E "s#$HOME#~#; s/^/ $gr*$wh /; s#([/~].*/)#$wh$dm\1$wh$bl#"
+    cat <( [[ -z "$(cat $copylist)" ]] && echo "empty copy list" ) $copylist | sort -u | sed -E "s#$HOME#~#; s/^/ $gr*$wh /; s#([/~].*/)#$wh$dm\1$wh$bl#"
     # echo "${bl}To Move:"
-    cat <( (($(wc -l $cutlist)==0)) && echo "cut list empty") $cutlist | sort -u | sed -E "s#$HOME#~#; s/^/ $rd*$wh /; s#([/~].*/)#$wh$dm\1$wh$bl#"
+    cat <( [[ -z "$(cat $cutlist)" ]] && echo "empty cut list" ) $cutlist | sort -u | sed -E "s#$HOME#~#; s/^/ $rd*$wh /; s#([/~].*/)#$wh$dm\1$wh$bl#"
   ;;
 esac
 echo -n $wh
